@@ -3,15 +3,15 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
-
-  const [name, setName] = useState('');
-  const [username, setUsername] = useState('');
-  const [desc, setDesc] = useState('');
-  const [image, setImage] = useState('');
-  const [location, setLocation] = useState('');
+  const [name, setName] = useState('Nama Avatar');
+  const [username, setUsername] = useState('username');
+  const [desc, setDesc] = useState('Deskripsi avatar');
+  const [image, setImage] = useState('./avatar.jpeg');
+  const [location, setLocation] = useState('Lokasi');
   const [totalRepo, setTotalRepo] = useState(0);
   const [followers, setFollowers] = useState(0);
   const [following, setFollowing] = useState(0);
+  const [dataRepo, setDataRepo] = useState([]);
   const [cari, setCari] = useState('');
   const [error, setError] = useState(false);
 
@@ -20,6 +20,12 @@ function App() {
       .then(res => res.json())
       .then(data => {
         setDataUser(data)
+
+        fetch('https://api.github.com/users/riyansubekti/repos')
+        .then(res => res.json())
+        .then(data => {
+          setDataRepo(data)
+        })
       })
   },[])
 
@@ -52,6 +58,12 @@ function App() {
         }else{
           setError(false)
           setDataUser(data)
+
+          fetch(`https://api.github.com/users/${data.login}/repos`)
+          .then(res => res.json())
+          .then(data => {
+            setDataRepo(data)
+          })
         }
       })
   }
@@ -93,7 +105,23 @@ function App() {
           }
         </div>
         <div className="col-sm-12 col-md-8">
-          
+          {
+            !error ?
+            <>
+              <h4>Repository : {username}</h4>
+              <ul className="list-group">
+                {
+                  dataRepo.map((data, index) => (
+                    <li key={index} className="list-group-item"><div className="ms-2 me-auto">
+                      <div className="fw-bold">{data.name}</div>
+                        {data.description}
+                      </div>
+                    </li>
+                  ))
+                }
+              </ul>
+            </> : null
+          }
         </div>
       </div>
     </div>
